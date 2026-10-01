@@ -5,10 +5,12 @@ Ein Mod für Minecraft **Java Edition 26.3**, der die Inhalte geöffneter Kisten
 ## Installieren
 
 1. Installiere [Fabric Loader](https://fabricmc.net/use/installer/) für **Minecraft 26.3**, mindestens Version **0.19.5**.
-2. Lege `mc-item-finder-1.0.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation.
+2. Lege `mc-item-finder-1.1.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation. Ersetze dabei die vorherige Item-Finder-JAR.
 3. Starte das Fabric-Profil. Minecraft 26.3 benötigt **Java 25**; beim offiziellen Launcher wird die passende Java-Laufzeit normalerweise mitgeliefert.
 
-Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.0.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
+Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.1.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
+
+Für Einstellungen über das Mod-Menü installiere zusätzlich [Mod Menu 21.0.0 für Minecraft 26.3](https://www.curseforge.com/minecraft/mc-mods/modmenu). Mod Menu ist optional.
 
 ## Benutzen
 
@@ -18,7 +20,9 @@ Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.0.0.jar`. Die `-sour
 - Klicke auf ein Item. Die Suche schließt sich und alle gespeicherten Kisten mit diesem Item erhalten einen leuchtenden Umriss. Die Zahlen unter den Icons zeigen die insgesamt gemerkte Item-Anzahl in der aktuellen Dimension.
 - Öffne die Suche erneut und klicke auf **„Markierung löschen“**, um die Markierung zu beenden. Der Schalter „Kisten merken“ ist ebenfalls direkt in der Suche erreichbar.
 
-Die Tasten kannst du unter **Optionen → Steuerung → Tastenbelegung → Chest Item Finder** ändern. Suche und Merken sind getrennt: Auch bei ausgeschaltetem Merken kannst du zuvor gespeicherte Kisten durchsuchen. Das Suchfenster funktioniert auch im Überlebensmodus und pausiert das Spiel nicht.
+Mit Mod Menu öffnest du **Mods → Chest Item Finder → Konfigurieren**. Dort kannst du „Kisten merken“ ein-/ausschalten und über **„Tastenbelegung ändern“** die Such- und Merken-Taste anpassen. Die Einstellungen sind bereits im Hauptmenü erreichbar. Änderungen werden sofort übernommen und gespeichert; „Fertig“ und Escape führen zurück zu Mod Menu.
+
+Die Tasten kannst du auch unter **Optionen → Steuerung → Tastenbelegung → Chest Item Finder** ändern. Suche und Merken sind getrennt: Auch bei ausgeschaltetem Merken kannst du zuvor gespeicherte Kisten durchsuchen. Das Suchfenster funktioniert auch im Überlebensmodus und pausiert das Spiel nicht.
 
 ## Welche Daten gespeichert werden
 
@@ -30,7 +34,7 @@ Die Suche verwendet den **zuletzt gesehenen Inhalt**. Wenn Hopper oder andere Sp
 
 ## Entwickeln und prüfen
 
-Voraussetzung: JDK 25. Der Gradle-Wrapper verwendet Gradle 9.6.0; Fabric Loom 1.17.21, Loader 0.19.5 und Fabric API 0.161.0+26.3 sind festgelegt. Minecraft 26.3 ist nicht mehr obfuskiert, daher wird die normale `jar`-Task verwendet.
+Voraussetzung: JDK 25. Der Gradle-Wrapper verwendet Gradle 9.6.0; Fabric Loom 1.17.21, Loader 0.19.5, Fabric API 0.161.0+26.3 und Mod Menu 21.0.0 sind festgelegt. Mod Menu ist in der Entwicklungsumgebung verfügbar, wird aber nicht in die Mod-JAR eingebettet. Minecraft 26.3 ist nicht mehr obfuskiert, daher wird die normale `jar`-Task verwendet.
 
 ```powershell
 .\gradlew.bat build
@@ -53,5 +57,6 @@ Manueller Spieltest:
 5. Merken ausschalten und weitere Kisten öffnen: keine neuen Treffer; bereits gespeicherte bleiben suchbar.
 6. Spiel neu starten, Welt und Dimension wechseln: Speicher bleibt erhalten und die Treffer bleiben ihrem Kontext zugeordnet.
 7. Mit gehaltenem Block an eine Kiste schleichen und einen Block platzieren: kein neuer Kisteneintrag.
+8. Im Hauptmenü über Mod Menu konfigurieren: Merken umschalten und Tasten ändern; nach einem Neustart bleiben beide Einstellungen erhalten. „Fertig“ und Escape führen zum vorherigen Bildschirm zurück. Ohne Mod Menu bleiben die Suche und beide Tastenkürzel nutzbar.
 
 Lizenz: MIT.

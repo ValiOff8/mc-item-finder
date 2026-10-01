@@ -23,5 +23,10 @@
   "itemfinder.screen.selected": "%s · %s matching chests",
   "itemfinder.screen.item_narration": "%s, %s remembered",
   "itemfinder.screen.known_count": "Remembered quantity: %s",
-  "itemfinder.screen.not_remembered": "Not found in any remembered chest."
+  "itemfinder.screen.not_remembered": "Not found in any remembered chest.",
+  "itemfinder.settings.title": "Item Finder Settings",
+  "itemfinder.settings.capture_description": "Remember opened chests. Turning this off keeps previously saved chests.",
+  "itemfinder.settings.keybindings": "Change key bindings…",
+  "itemfinder.settings.keybindings_description": "Change the keys for item search and remembering chests.",
+  "itemfinder.settings.immediate": "Changes are saved immediately."
 }

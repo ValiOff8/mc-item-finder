@@ -7,12 +7,16 @@
   "authors": ["Vali"],
   "license": "MIT",
   "environment": "client",
-  "entrypoints": { "client": ["de.vali.itemfinder.client.ItemFinderClient"] },
+  "entrypoints": {
+    "client": ["de.vali.itemfinder.client.ItemFinderClient"],
+    "modmenu": ["de.vali.itemfinder.client.compat.ItemFinderModMenu"]
+  },
   "mixins": ["itemfinder.client.mixins.json"],
   "depends": {
     "fabricloader": ">=0.19.5",
     "minecraft": "26.3",
     "java": ">=25",
     "fabric-api": ">=0.161.0+26.3"
-  }
+  },
+  "suggests": { "modmenu": ">=21.0.0" }
 }

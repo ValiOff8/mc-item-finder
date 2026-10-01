@@ -23,5 +23,10 @@
   "itemfinder.screen.selected": "%s · %s passende Kisten",
   "itemfinder.screen.item_narration": "%s, %s gespeichert",
   "itemfinder.screen.known_count": "Gespeicherte Anzahl: %s",
-  "itemfinder.screen.not_remembered": "In keiner gespeicherten Kiste vorhanden."
+  "itemfinder.screen.not_remembered": "In keiner gespeicherten Kiste vorhanden.",
+  "itemfinder.settings.title": "Item Finder – Einstellungen",
+  "itemfinder.settings.capture_description": "Geöffnete Kisten merken. Beim Ausschalten bleiben gespeicherte Kisten erhalten.",
+  "itemfinder.settings.keybindings": "Tastenbelegung ändern …",
+  "itemfinder.settings.keybindings_description": "Die Tasten für Suche und Kisten merken lassen sich dort ändern.",
+  "itemfinder.settings.immediate": "Änderungen werden sofort gespeichert."
 }
