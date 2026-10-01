@@ -5,10 +5,10 @@ Ein Mod für Minecraft **Java Edition 26.3**, der die Inhalte geöffneter Kisten
 ## Installieren
 
 1. Installiere [Fabric Loader](https://fabricmc.net/use/installer/) für **Minecraft 26.3**, mindestens Version **0.19.5**.
-2. Lege `mc-item-finder-1.2.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation. Ersetze dabei die vorherige Item-Finder-JAR.
+2. Lege `mc-item-finder-1.3.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation. Ersetze dabei die vorherige Item-Finder-JAR.
 3. Starte das Fabric-Profil. Minecraft 26.3 benötigt **Java 25**; beim offiziellen Launcher wird die passende Java-Laufzeit normalerweise mitgeliefert.
 
-Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.2.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
+Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.3.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
 
 Für Einstellungen über das Mod-Menü installiere zusätzlich [Mod Menu 21.0.0 für Minecraft 26.3](https://www.curseforge.com/minecraft/mc-mods/modmenu). Mod Menu ist optional.
 
@@ -18,7 +18,9 @@ Für Einstellungen über das Mod-Menü installiere zusätzlich [Mod Menu 21.0.0 
 - Öffne bei eingeschaltetem Merken die Kisten, die du später durchsuchen möchtest. Normale Kisten, Redstone-Kisten und Doppelkisten werden erfasst.
 - **I** öffnet die Suche. Suche nach dem Itemnamen in deiner Spielsprache, einer ID wie `minecraft:diamond` oder einem Item-Tag wie `#minecraft:logs`.
 - **„Items mit 0 ausblenden“** blendet Items aus, deren gespeicherte Anzahl in der aktuellen Welt und Dimension 0 ist. Der Schalter wirkt auch bei Namens-, ID- und Tag-Suchen. Er ist anfangs aus und bleibt nach einem Neustart erhalten. Beim Umschalten bleibt der Suchtext erhalten und die Liste beginnt wieder auf der ersten Seite.
-- Klicke auf ein Item. Die Suche schließt sich und alle gespeicherten Kisten mit diesem Item erhalten einen leuchtenden Umriss. Die Zahlen unter den Icons zeigen die insgesamt gemerkte Item-Anzahl in der aktuellen Dimension.
+- Klicke auf ein Item, um es einzeln zu suchen. Das ersetzt die bisherige Auswahl und schließt die Suche. Die Zahlen unter den Icons zeigen die insgesamt gemerkte Item-Anzahl in der aktuellen Dimension.
+- Halte **Strg (Control)** gedrückt und klicke auf mehrere Items, um sie gemeinsam zu suchen. **Strg + Klick** fügt ein Item hinzu oder entfernt es aus der Auswahl; die Suche bleibt offen. Ausgewählte Icons bekommen einen goldenen Rahmen. Die Auswahl bleibt beim Wechseln der Suchbegriffe, Seiten und des 0-Filters erhalten.
+- Schließe die Mehrfachauswahl mit **„Fertig“** oder **Escape**. Alle gespeicherten Kisten, die **mindestens eines** der ausgewählten Items enthalten, erhalten einen leuchtenden Umriss. Eine Kiste mit mehreren ausgewählten Items wird nur einmal markiert und gezählt.
 - Öffne die Suche erneut und klicke auf **„Markierung löschen“**, um die Markierung zu beenden. Der Schalter „Kisten merken“ ist ebenfalls direkt in der Suche erreichbar.
 
 Mit Mod Menu öffnest du **Mods → Chest Item Finder → Konfigurieren**. Dort kannst du „Kisten merken“ und **„Items mit 0 ausblenden“** ein-/ausschalten und über **„Tastenbelegung ändern“** die Such- und Merken-Taste anpassen. Die Einstellungen sind bereits im Hauptmenü erreichbar. Änderungen werden sofort übernommen und gespeichert; „Fertig“ und Escape führen zurück zu Mod Menu.
@@ -47,7 +49,7 @@ In diesem Workspace liegt zusätzlich eine portable JDK-25-Toolchain in `.tools/
 .\build.ps1
 ```
 
-Die automatisierten Tests prüfen Speicher-Roundtrip, Welt-/Dimensionsisolation, Doppelkisten, leere Kisten, beschädigte Dateien, den Schalter und die Zuordnung von geöffneten/synchronisierten Containern. Build und Tests sind automatisiert geprüft; die Grafik und Bedienung wurden noch nicht in einem laufenden Spiel geprüft.
+Die automatisierten Tests prüfen Speicher-Roundtrip, Welt-/Dimensionsisolation, Doppelkisten, leere Kisten, beschädigte Dateien, die Einstellungen, Mehrfachsuche ohne doppelte Treffer und die Zuordnung von geöffneten/synchronisierten Containern. Build und Tests sind automatisiert geprüft; die Grafik und Bedienung wurden noch nicht in einem laufenden Spiel geprüft.
 
 Manueller Spieltest:
 
@@ -60,5 +62,6 @@ Manueller Spieltest:
 7. Mit gehaltenem Block an eine Kiste schleichen und einen Block platzieren: kein neuer Kisteneintrag.
 8. Im Hauptmenü über Mod Menu konfigurieren: Merken umschalten und Tasten ändern; nach einem Neustart bleiben beide Einstellungen erhalten. „Fertig“ und Escape führen zum vorherigen Bildschirm zurück. Ohne Mod Menu bleiben die Suche und beide Tastenkürzel nutzbar.
 9. „Items mit 0 ausblenden“ in der Suche einschalten: nur Items mit positivem gespeicherten Bestand erscheinen, auch bei Name/ID/Tag-Suchen. Wieder ausschalten: alle Registry-Items sind wieder sichtbar. Ohne gespeicherten Bestand zeigt der eingeschaltete Filter einen Hinweis. Den Filter auch über Mod Menu ändern und nach einem Neustart prüfen; vorhandene Konfigurationen behalten ihre Merken-Einstellung.
+10. Je eine Kiste mit Diamanten, Eisen und beiden Items öffnen. Mit Strg + Klick Diamant und Eisen auswählen: die Suche bleibt offen und beide Icons sind markiert. Nach „Fertig“ oder Escape leuchten alle drei Kisten; die Kiste mit beiden Items zählt einmal. Eisen per Strg + Klick abwählen: nur Diamant-Kisten bleiben. Normal auf Eisen klicken: die Auswahl besteht nur aus Eisen. „Markierung löschen“ entfernt die gesamte Auswahl. Mehrfachauswahl auch über verschiedene Suchbegriffe und Seiten sowie mit dem 0-Filter prüfen.
 
 Lizenz: MIT.

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ class ChestMemoryTest {
     private static final String OVERWORLD = "minecraft:overworld";
     private static final String NETHER = "minecraft:the_nether";
     private static final String DIAMOND = "minecraft:diamond";
+    private static final String IRON = "minecraft:iron_ingot";
     private static final ChestMemory.Position LEFT = new ChestMemory.Position(10, 64, 20);
     private static final ChestMemory.Position RIGHT = new ChestMemory.Position(11, 64, 20);
 
@@ -73,6 +75,56 @@ class ChestMemoryTest {
         memory.save();
         memory.loadWorld("empty-chest");
         assertTrue(memory.records(OVERWORLD).getFirst().items().isEmpty());
+    }
+
+    @Test
+    void findsUnionOfSelectedItemsOnceAndOnlyWithinCurrentDimension() throws IOException {
+        ChestMemory memory = new ChestMemory(directory);
+        memory.loadWorld("multiple-items");
+        ChestMemory.Position both = new ChestMemory.Position(12, 64, 20);
+        ChestMemory.Position unrelated = new ChestMemory.Position(13, 64, 20);
+        memory.remember(OVERWORLD, List.of(LEFT), Map.of(DIAMOND, 3));
+        memory.remember(OVERWORLD, List.of(RIGHT), Map.of(IRON, 4));
+        memory.remember(OVERWORLD, List.of(both), Map.of(DIAMOND, 5, IRON, 6));
+        memory.remember(OVERWORLD, List.of(unrelated), Map.of("minecraft:stone", 7));
+        memory.remember(NETHER, List.of(LEFT), Map.of(DIAMOND, 8, IRON, 9));
+
+        List<ChestMemory.ChestRecord> matches = memory.findAny(OVERWORLD, List.of(DIAMOND, IRON, DIAMOND));
+        assertEquals(List.of(List.of(LEFT), List.of(RIGHT), List.of(both)),
+                matches.stream().map(ChestMemory.ChestRecord::positions).toList());
+        assertTrue(matches.stream().allMatch(record -> record.dimension().equals(OVERWORLD)));
+    }
+
+    @Test
+    void emptyInvalidAndUnmatchedSelectionsDoNotInterfereWithValidMatches() throws IOException {
+        ChestMemory memory = new ChestMemory(directory);
+        memory.loadWorld("selection-edges");
+        memory.remember(OVERWORLD, List.of(LEFT), Map.of(DIAMOND, 3));
+        memory.remember(OVERWORLD, List.of(RIGHT), Map.of(IRON, 4));
+
+        assertTrue(memory.findAny(OVERWORLD, List.of()).isEmpty());
+        assertTrue(memory.findAny(OVERWORLD, Arrays.asList("bad id", null)).isEmpty());
+        assertTrue(memory.findAny(OVERWORLD, List.of("minecraft:emerald")).isEmpty());
+        assertEquals(memory.find(OVERWORLD, DIAMOND), memory.findAny(OVERWORLD, List.of(DIAMOND)));
+        assertEquals(memory.find(OVERWORLD, DIAMOND),
+                memory.findAny(OVERWORLD, Arrays.asList("minecraft:emerald", "bad id", null, DIAMOND)));
+    }
+
+    @Test
+    void updatedZeroCountsAndEmptySnapshotsRemoveMultiItemMatches() throws IOException {
+        ChestMemory memory = new ChestMemory(directory);
+        memory.loadWorld("updated-selection");
+        List<String> selection = List.of(DIAMOND, IRON);
+        memory.remember(OVERWORLD, List.of(LEFT), Map.of(DIAMOND, 3, IRON, 4));
+        memory.remember(OVERWORLD, List.of(RIGHT), Map.of(IRON, 5));
+
+        memory.remember(OVERWORLD, List.of(LEFT), Map.of(DIAMOND, 0, IRON, 4));
+        assertEquals(2, memory.findAny(OVERWORLD, selection).size());
+        memory.remember(OVERWORLD, List.of(LEFT), Map.of(DIAMOND, 0, IRON, 0));
+        assertEquals(List.of(List.of(RIGHT)), memory.findAny(OVERWORLD, selection).stream()
+                .map(ChestMemory.ChestRecord::positions).toList());
+        memory.remember(OVERWORLD, List.of(RIGHT), Map.of());
+        assertTrue(memory.findAny(OVERWORLD, selection).isEmpty());
     }
 
     @Test

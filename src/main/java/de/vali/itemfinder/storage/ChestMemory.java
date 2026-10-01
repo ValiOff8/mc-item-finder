@@ -16,6 +16,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HexFormat;
@@ -109,6 +110,17 @@ public final class ChestMemory {
         }
         return chests.stream().filter(record -> record.dimension().equals(dimension))
                 .filter(record -> record.items().getOrDefault(itemId, 0) > 0).toList();
+    }
+
+    /** Find each chest once if it contains any of the selected items. */
+    public synchronized List<ChestRecord> findAny(String dimension, Collection<String> itemIds) {
+        List<String> validItemIds = itemIds.stream().filter(ChestMemory::validIdentifier).distinct().toList();
+        if (validItemIds.isEmpty()) {
+            return List.of();
+        }
+        return chests.stream().filter(record -> record.dimension().equals(dimension))
+                .filter(record -> validItemIds.stream()
+                        .anyMatch(itemId -> record.items().getOrDefault(itemId, 0) > 0)).toList();
     }
 
     public synchronized List<ChestRecord> records(String dimension) {

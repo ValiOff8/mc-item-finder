@@ -8,10 +8,14 @@ import de.vali.itemfinder.storage.FinderConfig;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -41,7 +45,7 @@ public final class ItemFinderClient implements ClientModInitializer {
     private ChestMemory memory;
     private FinderConfig config;
     private String worldKey;
-    private String selectedItem;
+    private final Set<String> selectedItems = new LinkedHashSet<>();
     private KeyMapping searchKey;
     private KeyMapping captureKey;
     private long ticks;
@@ -72,7 +76,7 @@ public final class ItemFinderClient implements ClientModInitializer {
     private void join(Minecraft client) {
         flush();
         capture.clear();
-        selectedItem = null;
+        clearSelection();
         if (client.getSingleplayerServer() != null) {
             worldKey = "singleplayer:" + client.getSingleplayerServer()
                     .getWorldPath(LevelResource.ROOT).toAbsolutePath().normalize();
@@ -97,7 +101,7 @@ public final class ItemFinderClient implements ClientModInitializer {
         snapshotCurrentMenu();
         flush();
         capture.clear();
-        selectedItem = null;
+        clearSelection();
         worldKey = null;
     }
 
@@ -220,13 +224,28 @@ public final class ItemFinderClient implements ClientModInitializer {
         memory.remember(target.dimension(), target.positions(), items);
     }
 
-    public String selectedItemId() { return selectedItem; }
-    public void selectItem(String id) { selectedItem = id; }
-    public void clearSelection() { selectedItem = null; }
+    public Set<String> selectedItemIds() {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(selectedItems));
+    }
+
+    public boolean isItemSelected(String id) { return selectedItems.contains(id); }
+
+    public void selectItem(String id) {
+        Objects.requireNonNull(id, "id");
+        selectedItems.clear();
+        selectedItems.add(id);
+    }
+
+    public void toggleSelectedItem(String id) {
+        Objects.requireNonNull(id, "id");
+        if (!selectedItems.remove(id)) selectedItems.add(id);
+    }
+
+    public void clearSelection() { selectedItems.clear(); }
 
     public List<ChestRecord> matchingChests() {
-        if (worldKey == null || selectedItem == null || Minecraft.getInstance().level == null) return List.of();
-        return memory.find(dimension(), selectedItem);
+        if (worldKey == null || selectedItems.isEmpty() || Minecraft.getInstance().level == null) return List.of();
+        return memory.findAny(dimension(), selectedItemIds());
     }
 
     public int knownChestCount() {

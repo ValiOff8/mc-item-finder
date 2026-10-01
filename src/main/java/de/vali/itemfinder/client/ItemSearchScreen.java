@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
@@ -173,7 +174,7 @@ public final class ItemSearchScreen extends Screen {
     }
 
     private void updateControls() {
-        clearButton.active = finder.selectedItemId() != null;
+        clearButton.active = !finder.selectedItemIds().isEmpty();
         previousButton.active = page > 0;
         nextButton.active = page + 1 < pageCount();
         captureButton.setMessage(captureMessage());
@@ -205,6 +206,9 @@ public final class ItemSearchScreen extends Screen {
                 width / 2, GRID_TOP + 12, 0xFFBAC7D6);
         }
         int footerY = height - 28;
+        Component multiSelectHint = Component.translatable("itemfinder.screen.multi_select_hint");
+        graphics.centeredText(font, font.plainSubstrByWidth(multiSelectHint.getString(), panelWidth),
+            width / 2, footerY - 28, 0xFFBAC7D6);
         Component selection = selectedMessage();
         graphics.centeredText(font, font.plainSubstrByWidth(selection.getString(), panelWidth),
             width / 2, footerY - 15, 0xFFBAC7D6);
@@ -214,10 +218,15 @@ public final class ItemSearchScreen extends Screen {
     }
 
     private Component selectedMessage() {
-        String id = finder.selectedItemId();
-        if (id == null) {
+        Set<String> selectedIds = finder.selectedItemIds();
+        if (selectedIds.isEmpty()) {
             return Component.translatable("itemfinder.screen.select_hint");
         }
+        if (selectedIds.size() > 1) {
+            return Component.translatable("itemfinder.screen.selected_multiple", selectedIds.size(),
+                finder.matchingChests().size());
+        }
+        String id = selectedIds.iterator().next();
         Component name = allItems.stream().filter(item -> item.id().equals(id))
             .map(item -> item.stack().getHoverName()).findFirst().orElse(Component.literal(id));
         return Component.translatable("itemfinder.screen.selected", name, finder.matchingChests().size());
@@ -244,8 +253,13 @@ public final class ItemSearchScreen extends Screen {
 
         @Override
         public void onPress(InputWithModifiers input) {
-            finder.selectItem(item.id());
-            onClose();
+            if (input.hasControlDown()) {
+                finder.toggleSelectedItem(item.id());
+                updateControls();
+            } else {
+                finder.selectItem(item.id());
+                onClose();
+            }
         }
 
         @Override
@@ -260,7 +274,7 @@ public final class ItemSearchScreen extends Screen {
             String count = knownCount > 999 ? "999+" : Integer.toString(knownCount);
             graphics.centeredText(font, count, x + getWidth() / 2, y + 18,
                 knownCount > 0 ? 0xFF9BEDAA : 0xFFB0B5BD);
-            if (item.id().equals(finder.selectedItemId())) {
+            if (finder.isItemSelected(item.id())) {
                 graphics.outline(x, y, getWidth(), getHeight(), 0xFFFFD65A);
             }
             if (isHovered()) {
@@ -270,12 +284,23 @@ public final class ItemSearchScreen extends Screen {
                 if (knownCount == 0) {
                     tooltip.add(Component.translatable("itemfinder.screen.not_remembered"));
                 }
+                if (finder.isItemSelected(item.id())) {
+                    tooltip.add(Component.translatable("itemfinder.screen.item_selected"));
+                }
+                tooltip.add(Component.translatable("itemfinder.screen.multi_select_hint"));
                 graphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mouseX, mouseY);
             }
         }
 
         @Override
         protected void updateWidgetNarration(NarrationElementOutput output) {
+            var narration = Component.translatable("itemfinder.screen.item_narration",
+                item.stack().getHoverName(), knownCount);
+            if (finder.isItemSelected(item.id())) {
+                narration.append(". ").append(Component.translatable("itemfinder.screen.item_selected"));
+            }
+            narration.append(". ").append(Component.translatable("itemfinder.screen.multi_select_hint"));
+            setMessage(narration);
             defaultButtonNarrationText(output);
         }
     }
