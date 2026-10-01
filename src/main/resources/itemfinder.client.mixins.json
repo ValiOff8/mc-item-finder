@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "de.vali.itemfinder.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["BlockInteractionMixin", "ContainerPacketsMixin", "ContainerCloseMixin", "GameRendererMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
