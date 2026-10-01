@@ -58,7 +58,7 @@ public final class ItemFinderSettingsScreen extends Screen {
             .bounds(buttonLeft, panelTop + keybindingsY, buttonWidth, 20)
             .tooltip(Tooltip.create(keybindingsDescription))
             .build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
+        addRenderableWidget(Button.builder(Component.translatable("itemfinder.screen.done"), button -> onClose())
             .bounds(buttonLeft, panelTop + doneY, buttonWidth, 20).build());
         setInitialFocus(captureButton);
     }

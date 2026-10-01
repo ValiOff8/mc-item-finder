@@ -95,7 +95,7 @@ public final class ItemSearchScreen extends Screen {
         nextButton = addRenderableWidget(Button.builder(
             Component.translatable("itemfinder.screen.next"), button -> changePage(1))
             .bounds(panelLeft + 36, footerY, 30, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("gui.done"), button -> onClose())
+        addRenderableWidget(Button.builder(Component.translatable("itemfinder.screen.done"), button -> onClose())
             .bounds(panelLeft + panelWidth - 80, footerY, 80, 20).build());
 
         rebuildItems();

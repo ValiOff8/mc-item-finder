@@ -11,6 +11,7 @@
   "itemfinder.screen.capture_on": "Remember chests: ON",
   "itemfinder.screen.capture_off": "Remember chests: OFF",
   "itemfinder.screen.clear": "Clear highlight",
+  "itemfinder.screen.done": "Done",
   "itemfinder.screen.search": "Search items",
   "itemfinder.screen.search_hint": "Item name, minecraft:id or #tag",
   "itemfinder.screen.search_tooltip": "Search item names or IDs. Prefix # to search item tags.",

@@ -1,67 +1,70 @@
 # Chest Item Finder – Minecraft 26.3 / Fabric
 
-Ein Mod für Minecraft **Java Edition 26.3**, der die Inhalte geöffneter Kisten lokal speichert. Über eine Suche mit Item-Raster findest du anschließend die passenden Kisten: Sie bekommen helle weiß-goldene Umrisse, die auch durch Wände sichtbar sind.
+A client mod for Minecraft **Java Edition 26.3** that remembers the contents of opened chests locally. Find items using a searchable item grid, then locate matching chests by their bright white-and-gold outlines, visible through walls.
 
-## Installieren
+## Installation
 
-1. Installiere [Fabric Loader](https://fabricmc.net/use/installer/) für **Minecraft 26.3**, mindestens Version **0.19.5**.
-2. Lege `mc-item-finder-1.3.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation. Ersetze dabei die vorherige Item-Finder-JAR.
-3. Starte das Fabric-Profil. Minecraft 26.3 benötigt **Java 25**; beim offiziellen Launcher wird die passende Java-Laufzeit normalerweise mitgeliefert.
+1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for **Minecraft 26.3**, version **0.19.5** or later.
+2. Place `mc-item-finder-1.3.0.jar` and [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in your Minecraft installation's `mods` folder. Replace the previous Item Finder JAR.
+3. Launch the Fabric profile. Minecraft 26.3 requires **Java 25**; the official launcher normally supplies the appropriate Java runtime.
 
-Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.3.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
+The built mod is at `build/libs/mc-item-finder-1.3.0.jar`. The `-sources.jar` contains source code and should not go in the `mods` folder. Install the mod on your client; no server installation is required.
 
-Für Einstellungen über das Mod-Menü installiere zusätzlich [Mod Menu 21.0.0 für Minecraft 26.3](https://www.curseforge.com/minecraft/mc-mods/modmenu). Mod Menu ist optional.
+To access settings through the Mods screen, also install [Mod Menu 21.0.0 for Minecraft 26.3](https://www.curseforge.com/minecraft/mc-mods/modmenu). Mod Menu is optional.
 
-## Benutzen
+## Usage
 
-- **O** schaltet „Kisten merken“ ein oder aus. Anfangs ist es **aus**. Die Einstellung bleibt nach einem Neustart erhalten.
-- Öffne bei eingeschaltetem Merken die Kisten, die du später durchsuchen möchtest. Normale Kisten, Redstone-Kisten und Doppelkisten werden erfasst.
-- **I** öffnet die Suche. Suche nach dem Itemnamen in deiner Spielsprache, einer ID wie `minecraft:diamond` oder einem Item-Tag wie `#minecraft:logs`.
-- **„Items mit 0 ausblenden“** blendet Items aus, deren gespeicherte Anzahl in der aktuellen Welt und Dimension 0 ist. Der Schalter wirkt auch bei Namens-, ID- und Tag-Suchen. Er ist anfangs aus und bleibt nach einem Neustart erhalten. Beim Umschalten bleibt der Suchtext erhalten und die Liste beginnt wieder auf der ersten Seite.
-- Klicke auf ein Item, um es einzeln zu suchen. Das ersetzt die bisherige Auswahl und schließt die Suche. Die Zahlen unter den Icons zeigen die insgesamt gemerkte Item-Anzahl in der aktuellen Dimension.
-- Halte **Strg (Control)** gedrückt und klicke auf mehrere Items, um sie gemeinsam zu suchen. **Strg + Klick** fügt ein Item hinzu oder entfernt es aus der Auswahl; die Suche bleibt offen. Ausgewählte Icons bekommen einen goldenen Rahmen. Die Auswahl bleibt beim Wechseln der Suchbegriffe, Seiten und des 0-Filters erhalten.
-- Schließe die Mehrfachauswahl mit **„Fertig“** oder **Escape**. Alle gespeicherten Kisten, die **mindestens eines** der ausgewählten Items enthalten, erhalten einen leuchtenden Umriss. Eine Kiste mit mehreren ausgewählten Items wird nur einmal markiert und gezählt.
-- Öffne die Suche erneut und klicke auf **„Markierung löschen“**, um die Markierung zu beenden. Der Schalter „Kisten merken“ ist ebenfalls direkt in der Suche erreichbar.
+- **O** toggles chest memory. It is **OFF** by default, and the setting persists across restarts.
+- With chest memory enabled, open the chests you want to search later. Normal chests, trapped chests, and double chests are supported.
+- **I** opens the search screen. Search by item name in your game language, an ID such as `minecraft:diamond`, or an item tag such as `#minecraft:logs`.
+- **Hide zero-count items** hides items whose remembered quantity in the current world and dimension is 0. It also applies to name, ID, and tag searches. The setting defaults to OFF and persists across restarts. Toggling it keeps your search text and resets the results to the first page.
+- Click an item to search for it alone. This replaces the previous selection and closes the search screen. The numbers below the icons show the total remembered quantity in the current dimension.
+- Hold **Ctrl (Control)** and click multiple items to search for them together. **Ctrl + click** adds or removes an item without closing the search screen. Selected icons have a gold border. Your selection persists when changing search terms, pages, and the zero-count filter.
+- Finish selecting with **Done** or **Escape**. Every remembered chest containing **at least one** selected item receives a glowing outline. A chest containing several selected items is highlighted and counted once.
+- Reopen the search screen and click **Clear highlight** to clear the selection and stop highlighting. You can also toggle **Remember chests** directly in the search screen.
 
-Mit Mod Menu öffnest du **Mods → Chest Item Finder → Konfigurieren**. Dort kannst du „Kisten merken“ und **„Items mit 0 ausblenden“** ein-/ausschalten und über **„Tastenbelegung ändern“** die Such- und Merken-Taste anpassen. Die Einstellungen sind bereits im Hauptmenü erreichbar. Änderungen werden sofort übernommen und gespeichert; „Fertig“ und Escape führen zurück zu Mod Menu.
+With Mod Menu, open **Mods → Chest Item Finder → Configure**. Toggle **Remember chests** and **Hide zero-count items**, or use **Change key bindings…** to adjust the search and memory keys. Settings are available from the main menu. Changes take effect and are saved immediately; Done and Escape return to Mod Menu.
 
-Die Tasten kannst du auch unter **Optionen → Steuerung → Tastenbelegung → Chest Item Finder** ändern. Suche und Merken sind getrennt: Auch bei ausgeschaltetem Merken kannst du zuvor gespeicherte Kisten durchsuchen. Das Suchfenster funktioniert auch im Überlebensmodus und pausiert das Spiel nicht.
+You can also change the keys under **Options → Controls → Key Binds → Chest Item Finder**. Searching remains available when chest memory is disabled, using previously saved chests. The search screen works in Survival mode and does not pause the game.
 
-## Welche Daten gespeichert werden
+The mod's labels and messages are in English, regardless of the selected game language. Item names and Minecraft's own screens follow your game language.
 
-Gespeichert werden Kistenposition, Dimension, Item-IDs, Stückzahlen und der Zeitpunkt der letzten Inhaltsänderung. Es wird auf die erste vollständige Übermittlung des geöffneten Kisteninventars gewartet; dein Spielerinventar und das Item am Mauszeiger werden nicht als Kisteninhalt gespeichert. Änderungen während des Öffnens sowie der sichtbare Stand beim Schließen werden übernommen. Doppelkisten zählen als eine Kiste.
+## Stored data and limitations
 
-Die Dateien liegen im Spielverzeichnis unter `config/itemfinder/`: `config.json` enthält die Einstellungen, `worlds/*.json` enthält die Kisten. Einzelspielerwelten sind anhand ihres Speicherpfads getrennt, Server anhand ihrer Adresse; Dimensionen werden zusätzlich getrennt. Beschädigte Speicherdateien werden als `.corrupt-…` gesichert. Der Mod verschickt keine gespeicherten Daten an andere Spieler.
+The mod stores chest positions, dimensions, item IDs, quantities, and the time of the last content change. It waits for the first complete inventory update from the server. Your player inventory and the item held by the cursor are excluded. Changes while a chest is open and its visible contents when closing are recorded. Double chests count as one chest.
 
-Die Suche verwendet den **zuletzt gesehenen Inhalt**. Wenn Hopper oder andere Spieler eine geschlossene Kiste verändern, musst du sie mit eingeschaltetem Merken erneut öffnen, um den Stand zu aktualisieren. Ungeöffnete Kisten werden nie durchsucht. Endertruhen, Fässer, Shulkerkisten und reine Server-Menüs sind nicht Teil der Kistenerfassung. Die Markierung zeichnet einen leuchtenden Kistenumriss; sie nutzt eine eigene Darstellung im Stil des Spektralpfeils. Geladene Positionen ohne Kiste werden nicht markiert.
+Files are stored under `config/itemfinder/` in the game directory: `config.json` contains settings, and `worlds/*.json` contains chest memories. Singleplayer worlds are separated by their save paths, servers by their addresses, and dimensions are also kept separate. Corrupt memory files are backed up as `.corrupt-…` files. The mod does not send saved data to other players.
 
-## Entwickeln und prüfen
+Searches use the **last observed contents**. If hoppers or other players change a closed chest, reopen it with chest memory enabled to update the saved contents. Unopened chests are never searched. Ender chests, barrels, shulker boxes, and server-only menus are excluded. Highlights use a custom glowing chest outline inspired by the spectral arrow effect. Loaded positions without a chest are not highlighted.
 
-Voraussetzung: JDK 25. Der Gradle-Wrapper verwendet Gradle 9.6.0; Fabric Loom 1.17.21, Loader 0.19.5, Fabric API 0.161.0+26.3 und Mod Menu 21.0.0 sind festgelegt. Mod Menu ist in der Entwicklungsumgebung verfügbar, wird aber nicht in die Mod-JAR eingebettet. Minecraft 26.3 ist nicht mehr obfuskiert, daher wird die normale `jar`-Task verwendet.
+## Development and verification
+
+Requires JDK 25. The Gradle wrapper uses Gradle 9.6.0. Dependencies are pinned to Fabric Loom 1.17.21, Loader 0.19.5, Fabric API 0.161.0+26.3, and Mod Menu 21.0.0. Mod Menu is available in the development environment but is not bundled in the mod JAR. Minecraft 26.3 is no longer obfuscated, so the standard `jar` task is used.
 
 ```powershell
 .\gradlew.bat build
 ```
 
-In diesem Workspace liegt zusätzlich eine portable JDK-25-Toolchain in `.tools/jdk25/`. `./build.ps1` verwendet sie automatisch, falls vorhanden, und hält den Gradle-Cache innerhalb des Projekts.
+This workspace also contains a portable JDK 25 toolchain under `.tools/jdk25/`. `build.ps1` automatically uses it when present and keeps the Gradle cache inside the project.
 
 ```powershell
 .\build.ps1
 ```
 
-Die automatisierten Tests prüfen Speicher-Roundtrip, Welt-/Dimensionsisolation, Doppelkisten, leere Kisten, beschädigte Dateien, die Einstellungen, Mehrfachsuche ohne doppelte Treffer und die Zuordnung von geöffneten/synchronisierten Containern. Build und Tests sind automatisiert geprüft; die Grafik und Bedienung wurden noch nicht in einem laufenden Spiel geprüft.
+Automated tests cover persistence round trips, world and dimension isolation, double chests, empty chests, corrupt files, settings, multiple-item searches without duplicate matches, and tracking opened and synchronized containers. The build and tests have passed; graphics and interactions have not yet been checked in a running game.
 
-Manueller Spieltest:
+Manual gameplay checks:
 
-1. Merken ausschalten, eine Kiste mit Diamanten öffnen und nach Diamanten suchen: keine Markierung.
-2. Merken einschalten, dieselbe Kiste öffnen, schließen und Diamanten auswählen: Markierung auch hinter einer Wand.
-3. Zweite Kiste und Doppelkiste mit Diamanten öffnen: alle drei Standorte werden markiert, die Doppelkiste zählt einmal.
-4. Alle Diamanten aus einer Kiste nehmen und sie schließen: diese Kiste wird nicht mehr markiert. Diamanten nur im Spielerinventar führen nicht zu einem Treffer.
-5. Merken ausschalten und weitere Kisten öffnen: keine neuen Treffer; bereits gespeicherte bleiben suchbar.
-6. Spiel neu starten, Welt und Dimension wechseln: Speicher bleibt erhalten und die Treffer bleiben ihrem Kontext zugeordnet.
-7. Mit gehaltenem Block an eine Kiste schleichen und einen Block platzieren: kein neuer Kisteneintrag.
-8. Im Hauptmenü über Mod Menu konfigurieren: Merken umschalten und Tasten ändern; nach einem Neustart bleiben beide Einstellungen erhalten. „Fertig“ und Escape führen zum vorherigen Bildschirm zurück. Ohne Mod Menu bleiben die Suche und beide Tastenkürzel nutzbar.
-9. „Items mit 0 ausblenden“ in der Suche einschalten: nur Items mit positivem gespeicherten Bestand erscheinen, auch bei Name/ID/Tag-Suchen. Wieder ausschalten: alle Registry-Items sind wieder sichtbar. Ohne gespeicherten Bestand zeigt der eingeschaltete Filter einen Hinweis. Den Filter auch über Mod Menu ändern und nach einem Neustart prüfen; vorhandene Konfigurationen behalten ihre Merken-Einstellung.
-10. Je eine Kiste mit Diamanten, Eisen und beiden Items öffnen. Mit Strg + Klick Diamant und Eisen auswählen: die Suche bleibt offen und beide Icons sind markiert. Nach „Fertig“ oder Escape leuchten alle drei Kisten; die Kiste mit beiden Items zählt einmal. Eisen per Strg + Klick abwählen: nur Diamant-Kisten bleiben. Normal auf Eisen klicken: die Auswahl besteht nur aus Eisen. „Markierung löschen“ entfernt die gesamte Auswahl. Mehrfachauswahl auch über verschiedene Suchbegriffe und Seiten sowie mit dem 0-Filter prüfen.
+1. Disable chest memory, open a chest containing diamonds, and search for diamonds: no highlight.
+2. Enable chest memory, open and close the same chest, then select diamonds: its outline is visible through a wall.
+3. Open a second chest and a double chest containing diamonds: all three locations are highlighted, with the double chest counted once.
+4. Remove all diamonds from a chest and close it: that chest is no longer highlighted. Diamonds held only in your player inventory do not produce a match.
+5. Disable chest memory and open more chests: no new matches are recorded; previously remembered chests remain searchable.
+6. Restart the game and switch worlds and dimensions: memories persist, and matches stay associated with their original context.
+7. Sneak while holding a block and place it against a chest: no new chest entry is recorded.
+8. Open settings through Mod Menu from the main menu. Toggle chest memory and change key bindings; both persist after restarting. Done and Escape return to the previous screen. Without Mod Menu, search and both keyboard shortcuts remain available.
+9. Enable Hide zero-count items in the search screen: only items with a positive remembered quantity appear, including in name, ID, and tag searches. Disable it: all registry items are visible again. With no remembered stock, the enabled filter displays a message. Also change the filter through Mod Menu and check it after restarting; existing configurations retain their chest memory setting.
+10. Open one chest containing diamonds, one containing iron, and one containing both. Ctrl-click diamonds and iron: the search stays open and both icons are selected. After Done or Escape, all three chests glow; the chest containing both is counted once. Ctrl-click iron to deselect it: only diamond chests remain highlighted. Click iron normally: only iron is selected. Clear highlight removes the entire selection. Also check multiple selection across search terms and pages, and with the zero-count filter enabled.
+11. Select German as the game language: mod labels, messages, and Done buttons remain English, while item names follow the game language.
 
-Lizenz: MIT.
+License: MIT.
