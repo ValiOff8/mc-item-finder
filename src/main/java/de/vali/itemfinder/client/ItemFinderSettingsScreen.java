@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.network.chat.Component;
 
-/** Mod Menu settings backed by the same capture state and vanilla key bindings as the hotkeys. */
+/** Mod Menu settings backed by the search screen's preferences and vanilla key bindings. */
 public final class ItemFinderSettingsScreen extends Screen {
     private final Screen parent;
     private final ItemFinderClient finder = ItemFinderClient.getInstance();
@@ -18,8 +18,6 @@ public final class ItemFinderSettingsScreen extends Screen {
     private int panelTop;
     private int panelWidth;
     private int panelHeight;
-    private int captureDescriptionY;
-    private int keybindingsDescriptionY;
     private int immediateY;
 
     public ItemFinderSettingsScreen(Screen parent) {
@@ -36,10 +34,9 @@ public final class ItemFinderSettingsScreen extends Screen {
         int buttonLeft = (width - buttonWidth) / 2;
 
         int captureY = 12 + font.lineHeight + 14;
-        captureDescriptionY = captureY + 26;
-        int keybindingsY = captureDescriptionY + font.wordWrapHeight(captureDescription, textWidth) + 12;
-        keybindingsDescriptionY = keybindingsY + 26;
-        immediateY = keybindingsDescriptionY + font.wordWrapHeight(keybindingsDescription, textWidth) + 12;
+        int hideUnknownY = captureY + 26;
+        int keybindingsY = hideUnknownY + 26;
+        immediateY = keybindingsY + 26;
         int doneY = immediateY + font.wordWrapHeight(immediateMessage, textWidth) + 12;
         panelHeight = doneY + 32;
         panelTop = Math.max(6, (height - panelHeight) / 2);
@@ -49,6 +46,12 @@ public final class ItemFinderSettingsScreen extends Screen {
             button.setMessage(captureMessage());
         }).bounds(buttonLeft, panelTop + captureY, buttonWidth, 20)
             .tooltip(Tooltip.create(captureDescription))
+            .build());
+        addRenderableWidget(Button.builder(hideUnknownMessage(), button -> {
+            finder.toggleHideUnknownItems();
+            button.setMessage(hideUnknownMessage());
+        }).bounds(buttonLeft, panelTop + hideUnknownY, buttonWidth, 20)
+            .tooltip(Tooltip.create(Component.translatable("itemfinder.screen.hide_unknown_tooltip")))
             .build());
         addRenderableWidget(Button.builder(Component.translatable("itemfinder.settings.keybindings"), button ->
             minecraft.gui.setScreen(new KeyBindsScreen(this, minecraft.options)))
@@ -65,16 +68,17 @@ public final class ItemFinderSettingsScreen extends Screen {
             ? "itemfinder.screen.capture_on" : "itemfinder.screen.capture_off");
     }
 
+    private Component hideUnknownMessage() {
+        return Component.translatable(finder.hideUnknownItems()
+            ? "itemfinder.screen.hide_unknown_on" : "itemfinder.screen.hide_unknown_off");
+    }
+
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         extractBackground(graphics, mouseX, mouseY, delta);
         graphics.fill(panelLeft, panelTop, panelLeft + panelWidth, panelTop + panelHeight, 0xD0202020);
         graphics.outline(panelLeft, panelTop, panelWidth, panelHeight, 0xFF606060);
         graphics.centeredText(font, title, width / 2, panelTop + 12, 0xFFFFFFFF);
-        graphics.textWithWordWrap(font, captureDescription, panelLeft + 12,
-            panelTop + captureDescriptionY, panelWidth - 24, 0xFFB8B8B8);
-        graphics.textWithWordWrap(font, keybindingsDescription, panelLeft + 12,
-            panelTop + keybindingsDescriptionY, panelWidth - 24, 0xFFB8B8B8);
         int messageY = panelTop + immediateY;
         for (var line : font.split(immediateMessage, panelWidth - 24)) {
             graphics.centeredText(font, line, width / 2, messageY, 0xFFB8B8B8);

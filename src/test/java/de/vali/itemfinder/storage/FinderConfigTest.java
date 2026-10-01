@@ -14,16 +14,48 @@ class FinderConfigTest {
     Path directory;
 
     @Test
-    void captureStartsDisabledAndTogglePersistsAcrossRestarts() throws IOException {
+    void settingsStartDisabledAndPersistIndependentlyAcrossRestarts() throws IOException {
         Path file = directory.resolve("item-finder.json");
         FinderConfig config = FinderConfig.load(file);
         assertFalse(config.captureEnabled());
+        assertFalse(config.hideUnknownItems());
         assertTrue(config.toggleCaptureEnabled());
+        assertTrue(config.toggleHideUnknownItems());
         config.save();
-        assertTrue(FinderConfig.load(file).captureEnabled());
+        FinderConfig reloaded = FinderConfig.load(file);
+        assertTrue(reloaded.captureEnabled());
+        assertTrue(reloaded.hideUnknownItems());
         config.setCaptureEnabled(false);
         config.save();
-        assertFalse(FinderConfig.load(file).captureEnabled());
+        reloaded = FinderConfig.load(file);
+        assertFalse(reloaded.captureEnabled());
+        assertTrue(reloaded.hideUnknownItems());
+        reloaded.setHideUnknownItems(false);
+        reloaded.save();
+        FinderConfig reset = FinderConfig.load(file);
+        assertFalse(reset.captureEnabled());
+        assertFalse(reset.hideUnknownItems());
+    }
+
+    @Test
+    void existingConfigKeepsRecordingEnabledAndDefaultsToShowingAllItems() throws IOException {
+        Path file = directory.resolve("item-finder.json");
+        String original = "{\"schemaVersion\":1,\"captureEnabled\":true}";
+        Files.writeString(file, original);
+
+        FinderConfig config = FinderConfig.load(file);
+        assertTrue(config.captureEnabled());
+        assertFalse(config.hideUnknownItems());
+        assertEquals(original, Files.readString(file));
+        try (var files = Files.list(directory)) {
+            assertEquals(1, files.count());
+        }
+
+        config.setHideUnknownItems(true);
+        config.save();
+        FinderConfig migrated = FinderConfig.load(file);
+        assertTrue(migrated.captureEnabled());
+        assertTrue(migrated.hideUnknownItems());
     }
 
     @Test
@@ -32,6 +64,7 @@ class FinderConfigTest {
         Files.writeString(file, "broken config");
         FinderConfig config = assertDoesNotThrow(() -> FinderConfig.load(file));
         assertFalse(config.captureEnabled());
+        assertFalse(config.hideUnknownItems());
         config.save();
         assertFalse(FinderConfig.load(file).captureEnabled());
         try (var files = Files.list(directory)) {

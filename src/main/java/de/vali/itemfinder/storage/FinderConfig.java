@@ -16,6 +16,7 @@ public final class FinderConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final Path file;
     private boolean captureEnabled;
+    private boolean hideUnknownItems;
     private boolean protectedCorruptFile;
 
     public FinderConfig(Path file) {
@@ -34,6 +35,7 @@ public final class FinderConfig {
                 throw new IllegalArgumentException("Invalid item finder configuration");
             }
             config.captureEnabled = data.captureEnabled;
+            config.hideUnknownItems = Boolean.TRUE.equals(data.hideUnknownItems);
         } catch (JsonParseException | IllegalArgumentException exception) {
             Path backup = config.file.resolveSibling(config.file.getFileName() + ".corrupt-" + UUID.randomUUID());
             try {
@@ -58,6 +60,19 @@ public final class FinderConfig {
         return captureEnabled;
     }
 
+    public boolean hideUnknownItems() {
+        return hideUnknownItems;
+    }
+
+    public void setHideUnknownItems(boolean enabled) {
+        hideUnknownItems = enabled;
+    }
+
+    public boolean toggleHideUnknownItems() {
+        hideUnknownItems = !hideUnknownItems;
+        return hideUnknownItems;
+    }
+
     public void save() throws IOException {
         if (protectedCorruptFile) {
             throw new IOException("Cannot safely replace the unreadable configuration: " + file);
@@ -65,11 +80,13 @@ public final class FinderConfig {
         ConfigData data = new ConfigData();
         data.schemaVersion = 1;
         data.captureEnabled = captureEnabled;
+        data.hideUnknownItems = hideUnknownItems;
         ChestMemory.writeAtomically(file.getParent(), file, GSON.toJson(data));
     }
 
     private static final class ConfigData {
         private int schemaVersion;
         private Boolean captureEnabled;
+        private Boolean hideUnknownItems;
     }
 }

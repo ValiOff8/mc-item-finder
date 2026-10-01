@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -21,14 +22,17 @@ import net.minecraft.world.item.ItemStack;
 /** A client-only registry search. Selecting an icon never gives the player an item. */
 public final class ItemSearchScreen extends Screen {
     private static final int SLOT_SIZE = 30;
-    private static final int GRID_TOP = 91;
+    private static final int GRID_TOP = 116;
     private final ItemFinderClient finder = ItemFinderClient.getInstance();
     private final List<SearchItem> allItems = new ArrayList<>();
     private final List<ItemButton> itemButtons = new ArrayList<>();
     private List<SearchItem> results = List.of();
+    private Map<String, Integer> knownItemCounts = Map.of();
+    private boolean hasKnownItems;
     private String query = "";
     private EditBox search;
     private Button captureButton;
+    private Button hideUnknownButton;
     private Button clearButton;
     private Button previousButton;
     private Button nextButton;
@@ -63,7 +67,15 @@ public final class ItemSearchScreen extends Screen {
                 updateControls();
             }).bounds(panelLeft + controlWidth + 6, 28, controlWidth, 20).build());
 
-        search = addRenderableWidget(new EditBox(font, panelLeft, 53, panelWidth, 20,
+        hideUnknownButton = addRenderableWidget(Button.builder(hideUnknownMessage(), button -> {
+            finder.toggleHideUnknownItems();
+            page = 0;
+            filterItems();
+        }).bounds(panelLeft, 53, panelWidth, 20)
+            .tooltip(Tooltip.create(Component.translatable("itemfinder.screen.hide_unknown_tooltip")))
+            .build());
+
+        search = addRenderableWidget(new EditBox(font, panelLeft, 78, panelWidth, 20,
             Component.translatable("itemfinder.screen.search")));
         search.setMaxLength(128);
         search.setHint(Component.translatable("itemfinder.screen.search_hint"));
@@ -95,6 +107,11 @@ public final class ItemSearchScreen extends Screen {
             ? "itemfinder.screen.capture_on" : "itemfinder.screen.capture_off");
     }
 
+    private Component hideUnknownMessage() {
+        return Component.translatable(finder.hideUnknownItems()
+            ? "itemfinder.screen.hide_unknown_on" : "itemfinder.screen.hide_unknown_off");
+    }
+
     private void rebuildItems() {
         allItems.clear();
         for (Item item : BuiltInRegistries.ITEM) {
@@ -111,12 +128,16 @@ public final class ItemSearchScreen extends Screen {
     }
 
     private void filterItems() {
+        knownItemCounts = finder.knownItemCounts();
+        hasKnownItems = knownItemCounts.values().stream().anyMatch(count -> count > 0);
         String needle = query.strip().toLowerCase(Locale.ROOT);
         boolean tagSearch = needle.startsWith("#");
         String term = tagSearch ? needle.substring(1) : needle;
-        results = allItems.stream().filter(entry -> tagSearch
-            ? entry.tags().stream().anyMatch(tag -> tag.contains(term))
-            : entry.searchName().contains(term) || entry.id().contains(term)).toList();
+        results = allItems.stream()
+            .filter(entry -> !finder.hideUnknownItems() || knownItemCounts.getOrDefault(entry.id(), 0) > 0)
+            .filter(entry -> tagSearch
+                ? entry.tags().stream().anyMatch(tag -> tag.contains(term))
+                : entry.searchName().contains(term) || entry.id().contains(term)).toList();
         page = Math.clamp(page, 0, pageCount() - 1);
         rebuildGrid();
     }
@@ -142,7 +163,8 @@ public final class ItemSearchScreen extends Screen {
         int last = Math.min(first + columns * rows, results.size());
         for (int index = first; index < last; index++) {
             int slot = index - first;
-            ItemButton button = new ItemButton(results.get(index),
+            SearchItem item = results.get(index);
+            ItemButton button = new ItemButton(item, knownItemCounts.getOrDefault(item.id(), 0),
                 gridLeft + slot % columns * SLOT_SIZE,
                 GRID_TOP + slot / columns * SLOT_SIZE);
             itemButtons.add(addRenderableWidget(button));
@@ -155,6 +177,7 @@ public final class ItemSearchScreen extends Screen {
         previousButton.active = page > 0;
         nextButton.active = page + 1 < pageCount();
         captureButton.setMessage(captureMessage());
+        hideUnknownButton.setMessage(hideUnknownMessage());
     }
 
     @Override
@@ -173,10 +196,12 @@ public final class ItemSearchScreen extends Screen {
         graphics.fill(panelLeft - 8, 5, panelLeft + panelWidth + 8, height - 4, 0xDD17202C);
         graphics.centeredText(font, title, width / 2, 12, 0xFFFFFFFF);
         graphics.centeredText(font, Component.translatable("itemfinder.screen.results",
-            results.size(), finder.knownChestCount()), width / 2, 78, 0xFFBAC7D6);
+            results.size(), finder.knownChestCount()), width / 2, 103, 0xFFBAC7D6);
 
         if (results.isEmpty()) {
-            graphics.centeredText(font, Component.translatable("itemfinder.screen.no_results"),
+            Component emptyMessage = Component.translatable(finder.hideUnknownItems() && !hasKnownItems
+                ? "itemfinder.screen.no_known_items" : "itemfinder.screen.no_results");
+            graphics.centeredText(font, emptyMessage,
                 width / 2, GRID_TOP + 12, 0xFFBAC7D6);
         }
         int footerY = height - 28;
@@ -209,12 +234,12 @@ public final class ItemSearchScreen extends Screen {
         private final SearchItem item;
         private final int knownCount;
 
-        private ItemButton(SearchItem item, int x, int y) {
+        private ItemButton(SearchItem item, int knownCount, int x, int y) {
             super(x, y, SLOT_SIZE - 2, SLOT_SIZE - 2,
                 Component.translatable("itemfinder.screen.item_narration", item.stack().getHoverName(),
-                    finder.knownItemCount(item.id())));
+                    knownCount));
             this.item = item;
-            this.knownCount = finder.knownItemCount(item.id());
+            this.knownCount = knownCount;
         }
 
         @Override

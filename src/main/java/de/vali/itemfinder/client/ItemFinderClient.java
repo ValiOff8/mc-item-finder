@@ -126,13 +126,24 @@ public final class ItemFinderClient implements ClientModInitializer {
         config.toggleCaptureEnabled();
         capture.clear();
         flush();
+        saveConfig();
+        notifyPlayer(captureEnabled() ? "itemfinder.capture.enabled" : "itemfinder.capture.disabled");
+    }
+
+    public boolean hideUnknownItems() { return config.hideUnknownItems(); }
+
+    public void toggleHideUnknownItems() {
+        config.toggleHideUnknownItems();
+        saveConfig();
+    }
+
+    private void saveConfig() {
         try {
             config.save();
         } catch (IOException exception) {
             LOGGER.error("Could not save settings", exception);
             notifyPlayer("itemfinder.error.save");
         }
-        notifyPlayer(captureEnabled() ? "itemfinder.capture.enabled" : "itemfinder.capture.disabled");
     }
 
     /** Called on the client thread before sending a block-use request. */
@@ -225,6 +236,15 @@ public final class ItemFinderClient implements ClientModInitializer {
     public int knownItemCount(String itemId) {
         if (worldKey == null || Minecraft.getInstance().level == null) return 0;
         return memory.find(dimension(), itemId).stream().mapToInt(record -> record.items().getOrDefault(itemId, 0)).sum();
+    }
+
+    public Map<String, Integer> knownItemCounts() {
+        if (worldKey == null || Minecraft.getInstance().level == null) return Map.of();
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (ChestRecord record : memory.records(dimension())) {
+            record.items().forEach((id, count) -> counts.merge(id, count, Integer::sum));
+        }
+        return Map.copyOf(counts);
     }
 
     private String dimension() { return Minecraft.getInstance().level.dimension().identifier().toString(); }

@@ -5,10 +5,10 @@ Ein Mod für Minecraft **Java Edition 26.3**, der die Inhalte geöffneter Kisten
 ## Installieren
 
 1. Installiere [Fabric Loader](https://fabricmc.net/use/installer/) für **Minecraft 26.3**, mindestens Version **0.19.5**.
-2. Lege `mc-item-finder-1.1.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation. Ersetze dabei die vorherige Item-Finder-JAR.
+2. Lege `mc-item-finder-1.2.0.jar` und [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in den `mods`-Ordner deiner Minecraft-Installation. Ersetze dabei die vorherige Item-Finder-JAR.
 3. Starte das Fabric-Profil. Minecraft 26.3 benötigt **Java 25**; beim offiziellen Launcher wird die passende Java-Laufzeit normalerweise mitgeliefert.
 
-Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.1.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
+Die fertige Mod-Datei liegt in `build/libs/mc-item-finder-1.2.0.jar`. Die `-sources.jar` ist Quellcode und gehört nicht in den `mods`-Ordner. Der Mod wird nur auf deinem Client installiert; auf dem Server ist keine Installation nötig.
 
 Für Einstellungen über das Mod-Menü installiere zusätzlich [Mod Menu 21.0.0 für Minecraft 26.3](https://www.curseforge.com/minecraft/mc-mods/modmenu). Mod Menu ist optional.
 
@@ -17,10 +17,11 @@ Für Einstellungen über das Mod-Menü installiere zusätzlich [Mod Menu 21.0.0 
 - **O** schaltet „Kisten merken“ ein oder aus. Anfangs ist es **aus**. Die Einstellung bleibt nach einem Neustart erhalten.
 - Öffne bei eingeschaltetem Merken die Kisten, die du später durchsuchen möchtest. Normale Kisten, Redstone-Kisten und Doppelkisten werden erfasst.
 - **I** öffnet die Suche. Suche nach dem Itemnamen in deiner Spielsprache, einer ID wie `minecraft:diamond` oder einem Item-Tag wie `#minecraft:logs`.
+- **„Items mit 0 ausblenden“** blendet Items aus, deren gespeicherte Anzahl in der aktuellen Welt und Dimension 0 ist. Der Schalter wirkt auch bei Namens-, ID- und Tag-Suchen. Er ist anfangs aus und bleibt nach einem Neustart erhalten. Beim Umschalten bleibt der Suchtext erhalten und die Liste beginnt wieder auf der ersten Seite.
 - Klicke auf ein Item. Die Suche schließt sich und alle gespeicherten Kisten mit diesem Item erhalten einen leuchtenden Umriss. Die Zahlen unter den Icons zeigen die insgesamt gemerkte Item-Anzahl in der aktuellen Dimension.
 - Öffne die Suche erneut und klicke auf **„Markierung löschen“**, um die Markierung zu beenden. Der Schalter „Kisten merken“ ist ebenfalls direkt in der Suche erreichbar.
 
-Mit Mod Menu öffnest du **Mods → Chest Item Finder → Konfigurieren**. Dort kannst du „Kisten merken“ ein-/ausschalten und über **„Tastenbelegung ändern“** die Such- und Merken-Taste anpassen. Die Einstellungen sind bereits im Hauptmenü erreichbar. Änderungen werden sofort übernommen und gespeichert; „Fertig“ und Escape führen zurück zu Mod Menu.
+Mit Mod Menu öffnest du **Mods → Chest Item Finder → Konfigurieren**. Dort kannst du „Kisten merken“ und **„Items mit 0 ausblenden“** ein-/ausschalten und über **„Tastenbelegung ändern“** die Such- und Merken-Taste anpassen. Die Einstellungen sind bereits im Hauptmenü erreichbar. Änderungen werden sofort übernommen und gespeichert; „Fertig“ und Escape führen zurück zu Mod Menu.
 
 Die Tasten kannst du auch unter **Optionen → Steuerung → Tastenbelegung → Chest Item Finder** ändern. Suche und Merken sind getrennt: Auch bei ausgeschaltetem Merken kannst du zuvor gespeicherte Kisten durchsuchen. Das Suchfenster funktioniert auch im Überlebensmodus und pausiert das Spiel nicht.
 
@@ -28,7 +29,7 @@ Die Tasten kannst du auch unter **Optionen → Steuerung → Tastenbelegung → 
 
 Gespeichert werden Kistenposition, Dimension, Item-IDs, Stückzahlen und der Zeitpunkt der letzten Inhaltsänderung. Es wird auf die erste vollständige Übermittlung des geöffneten Kisteninventars gewartet; dein Spielerinventar und das Item am Mauszeiger werden nicht als Kisteninhalt gespeichert. Änderungen während des Öffnens sowie der sichtbare Stand beim Schließen werden übernommen. Doppelkisten zählen als eine Kiste.
 
-Die Dateien liegen im Spielverzeichnis unter `config/itemfinder/`: `config.json` enthält den Schalter, `worlds/*.json` enthält die Kisten. Einzelspielerwelten sind anhand ihres Speicherpfads getrennt, Server anhand ihrer Adresse; Dimensionen werden zusätzlich getrennt. Beschädigte Speicherdateien werden als `.corrupt-…` gesichert. Der Mod verschickt keine gespeicherten Daten an andere Spieler.
+Die Dateien liegen im Spielverzeichnis unter `config/itemfinder/`: `config.json` enthält die Einstellungen, `worlds/*.json` enthält die Kisten. Einzelspielerwelten sind anhand ihres Speicherpfads getrennt, Server anhand ihrer Adresse; Dimensionen werden zusätzlich getrennt. Beschädigte Speicherdateien werden als `.corrupt-…` gesichert. Der Mod verschickt keine gespeicherten Daten an andere Spieler.
 
 Die Suche verwendet den **zuletzt gesehenen Inhalt**. Wenn Hopper oder andere Spieler eine geschlossene Kiste verändern, musst du sie mit eingeschaltetem Merken erneut öffnen, um den Stand zu aktualisieren. Ungeöffnete Kisten werden nie durchsucht. Endertruhen, Fässer, Shulkerkisten und reine Server-Menüs sind nicht Teil der Kistenerfassung. Die Markierung zeichnet einen leuchtenden Kistenumriss; sie nutzt eine eigene Darstellung im Stil des Spektralpfeils. Geladene Positionen ohne Kiste werden nicht markiert.
 
@@ -58,5 +59,6 @@ Manueller Spieltest:
 6. Spiel neu starten, Welt und Dimension wechseln: Speicher bleibt erhalten und die Treffer bleiben ihrem Kontext zugeordnet.
 7. Mit gehaltenem Block an eine Kiste schleichen und einen Block platzieren: kein neuer Kisteneintrag.
 8. Im Hauptmenü über Mod Menu konfigurieren: Merken umschalten und Tasten ändern; nach einem Neustart bleiben beide Einstellungen erhalten. „Fertig“ und Escape führen zum vorherigen Bildschirm zurück. Ohne Mod Menu bleiben die Suche und beide Tastenkürzel nutzbar.
+9. „Items mit 0 ausblenden“ in der Suche einschalten: nur Items mit positivem gespeicherten Bestand erscheinen, auch bei Name/ID/Tag-Suchen. Wieder ausschalten: alle Registry-Items sind wieder sichtbar. Ohne gespeicherten Bestand zeigt der eingeschaltete Filter einen Hinweis. Den Filter auch über Mod Menu ändern und nach einem Neustart prüfen; vorhandene Konfigurationen behalten ihre Merken-Einstellung.
 
 Lizenz: MIT.
