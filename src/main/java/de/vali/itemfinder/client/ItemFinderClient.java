@@ -42,6 +42,8 @@ public final class ItemFinderClient implements ClientModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     private static ItemFinderClient instance;
     private final CaptureGate capture = new CaptureGate();
+    // Track the open chest independently so item highlights work with memory disabled.
+    private final CaptureGate openChest = new CaptureGate();
     private ChestMemory memory;
     private FinderConfig config;
     private String worldKey;
@@ -76,6 +78,7 @@ public final class ItemFinderClient implements ClientModInitializer {
     private void join(Minecraft client) {
         flush();
         capture.clear();
+        openChest.clear();
         clearSelection();
         if (client.getSingleplayerServer() != null) {
             worldKey = "singleplayer:" + client.getSingleplayerServer()
@@ -101,6 +104,7 @@ public final class ItemFinderClient implements ClientModInitializer {
         snapshotCurrentMenu();
         flush();
         capture.clear();
+        openChest.clear();
         clearSelection();
         worldKey = null;
     }
@@ -119,6 +123,9 @@ public final class ItemFinderClient implements ClientModInitializer {
                 capture.clear();
                 flush();
             }
+        }
+        if (openChest.hasActive() && client.player.containerMenu.containerId != openChest.menuId()) {
+            openChest.clear();
         }
         if (ticks % 40 == 0) flush();
     }
@@ -153,8 +160,9 @@ public final class ItemFinderClient implements ClientModInitializer {
     /** Called on the client thread before sending a block-use request. */
     public void onBlockUse(BlockPos position) {
         capture.offer(null);
+        openChest.offer(null);
         Minecraft client = Minecraft.getInstance();
-        if (!captureEnabled() || worldKey == null || client.level == null || client.player == null
+        if (worldKey == null || client.level == null || client.player == null
                 || !client.level.getWorldBorder().isWithinBounds(position)) return;
         boolean spectator = client.gameMode != null && client.gameMode.isSpectator();
         // Vanilla skips the container interaction when sneaking with either hand occupied.
@@ -174,23 +182,36 @@ public final class ItemFinderClient implements ClientModInitializer {
             if (!spectator && ChestBlock.isChestBlockedAt(client.level, neighbor)) return;
             positions.add(positionOf(neighbor));
         }
-        capture.offer(new CaptureGate.Target(worldKey, dimension(), positions, ticks + 100));
+        CaptureGate.Target target = new CaptureGate.Target(worldKey, dimension(), positions, ticks + 100);
+        openChest.offer(target);
+        if (captureEnabled()) capture.offer(target);
     }
 
-    public void cancelPendingInteraction() { capture.offer(null); }
+    public void cancelPendingInteraction() {
+        capture.offer(null);
+        openChest.offer(null);
+    }
 
     public void onMenuOpened(int containerId) {
         Minecraft client = Minecraft.getInstance();
-        if (!captureEnabled() || worldKey == null || client.level == null || client.player == null
+        if (worldKey == null || client.level == null || client.player == null
                 || !(client.player.containerMenu instanceof ChestMenu menu)
                 || menu.containerId != containerId) {
             capture.clear();
+            openChest.clear();
             return;
         }
-        capture.open(worldKey, dimension(), containerId, menu.getRowCount() * 9, ticks);
+        int slotCount = menu.getRowCount() * 9;
+        openChest.open(worldKey, dimension(), containerId, slotCount, ticks);
+        if (captureEnabled()) {
+            capture.open(worldKey, dimension(), containerId, slotCount, ticks);
+        } else {
+            capture.clear();
+        }
     }
 
     public void onMenuContents(int containerId) {
+        openChest.initialize(containerId);
         if (!captureEnabled() || !capture.initialize(containerId)) return;
         snapshotCurrentMenu();
         flush();
@@ -204,7 +225,15 @@ public final class ItemFinderClient implements ClientModInitializer {
     public void onMenuClosing() {
         snapshotCurrentMenu();
         capture.clear();
+        openChest.clear();
         flush();
+    }
+
+    public boolean isOpenChestMenu(ChestMenu menu) {
+        Minecraft client = Minecraft.getInstance();
+        return worldKey != null && client.level != null && client.player != null
+            && client.player.containerMenu == menu
+            && openChest.ready(worldKey, dimension(), menu.containerId) != null;
     }
 
     private void snapshotCurrentMenu() {

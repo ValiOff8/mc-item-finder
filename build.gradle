@@ -37,6 +37,10 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
     withSourcesJar()
 }
-test { useJUnitPlatform() }
+test {
+    useJUnitPlatform()
+    workingDir = layout.buildDirectory.dir('test-runtime').get().asFile
+    doFirst { workingDir.mkdirs() }
+}
 
 jar { from('LICENSE') { rename { "${it}_${project.base.archivesName.get()}" } } }

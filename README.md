@@ -5,7 +5,7 @@ A client-side Fabric mod for **Minecraft Java 26.3**. Remember opened chests, se
 ## Installation
 
 1. Install [Fabric Loader](https://fabricmc.net/use/installer/) **0.19.5 or later** for Minecraft **26.3**.
-2. Put `mc-item-finder-1.3.0.jar` and [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in your `mods` folder. Replace any older Item Finder JAR.
+2. Put `mc-item-finder-1.4.0.jar` and [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in your `mods` folder. Replace any older Item Finder JAR.
 3. Launch Minecraft with Fabric. **Java 25** is required.
 
 Install [Mod Menu 21.0.0](https://www.curseforge.com/minecraft/mc-mods/modmenu) if you want settings in the Mods screen. It is optional. No server installation is needed.
@@ -17,6 +17,7 @@ Install [Mod Menu 21.0.0](https://www.curseforge.com/minecraft/mc-mods/modmenu) 
 3. Click an item to highlight its chests. To select several items, **Ctrl + click** to add or remove them, then press **Done** or **Escape**. Chests containing **any** selected item are highlighted and counted once.
 
 - **Hide zero-count items** shows only items found in remembered chests in the current world and dimension.
+- Open a chest while searching: every stack of a selected item gets a gold border and subtle tint. Highlights update as items move and also work with chest memory OFF.
 - **Clear highlight** clears your selection and stops highlighting.
 - Change settings under **Mods → Chest Item Finder → Configure**. Settings persist across restarts.
 - Change shortcuts under **Options → Controls → Key Binds → Chest Item Finder**.
