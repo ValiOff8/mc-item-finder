@@ -104,6 +104,11 @@ public final class ChestMemory {
         dirty = true;
     }
 
+    /** Either remembered half identifies a chest, including after its size changes. */
+    public synchronized boolean isKnownChest(String dimension, List<Position> positions) {
+        return chests.stream().anyMatch(record -> overlaps(record, dimension, positions));
+    }
+
     public synchronized List<ChestRecord> find(String dimension, String itemId) {
         if (!validIdentifier(itemId)) {
             return List.of();

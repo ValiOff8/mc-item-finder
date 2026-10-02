@@ -53,7 +53,7 @@ class CaptureGateTest {
         assertNull(gate.ready("server:other", DIMENSION, 1));
     }
 
-    @Test void disablingOrClosingDropsPendingAndActiveCaptures() {
+    @Test void closingDropsPendingAndActiveCaptures() {
         offerSingle();
         gate.clear();
         assertFalse(gate.open(WORLD, DIMENSION, 1, 27, 5));

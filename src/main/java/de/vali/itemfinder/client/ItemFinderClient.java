@@ -41,8 +41,7 @@ public final class ItemFinderClient implements ClientModInitializer {
     public static final String MOD_ID = "itemfinder";
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     private static ItemFinderClient instance;
-    private final CaptureGate capture = new CaptureGate();
-    // Track the open chest independently so item highlights work with memory disabled.
+    // Track all opened chests; the recording switch only controls adding new memories.
     private final CaptureGate openChest = new CaptureGate();
     private ChestMemory memory;
     private FinderConfig config;
@@ -77,7 +76,6 @@ public final class ItemFinderClient implements ClientModInitializer {
 
     private void join(Minecraft client) {
         flush();
-        capture.clear();
         openChest.clear();
         clearSelection();
         if (client.getSingleplayerServer() != null) {
@@ -103,7 +101,6 @@ public final class ItemFinderClient implements ClientModInitializer {
     private void disconnect() {
         snapshotCurrentMenu();
         flush();
-        capture.clear();
         openChest.clear();
         clearSelection();
         worldKey = null;
@@ -116,16 +113,13 @@ public final class ItemFinderClient implements ClientModInitializer {
         while (searchKey.consumeClick()) {
             if (client.gui.screen() == null) client.gui.setScreen(new ItemSearchScreen());
         }
-        if (capture.hasActive()) {
-            if (client.player.containerMenu.containerId == capture.menuId()) {
+        if (openChest.hasActive()) {
+            if (client.player.containerMenu.containerId == openChest.menuId()) {
                 snapshotCurrentMenu();
             } else {
-                capture.clear();
+                openChest.clear();
                 flush();
             }
-        }
-        if (openChest.hasActive() && client.player.containerMenu.containerId != openChest.menuId()) {
-            openChest.clear();
         }
         if (ticks % 40 == 0) flush();
     }
@@ -135,7 +129,7 @@ public final class ItemFinderClient implements ClientModInitializer {
     public void toggleCapture() {
         snapshotCurrentMenu();
         config.toggleCaptureEnabled();
-        capture.clear();
+        snapshotCurrentMenu();
         flush();
         saveConfig();
         notifyPlayer(captureEnabled() ? "itemfinder.capture.enabled" : "itemfinder.capture.disabled");
@@ -159,7 +153,6 @@ public final class ItemFinderClient implements ClientModInitializer {
 
     /** Called on the client thread before sending a block-use request. */
     public void onBlockUse(BlockPos position) {
-        capture.offer(null);
         openChest.offer(null);
         Minecraft client = Minecraft.getInstance();
         if (worldKey == null || client.level == null || client.player == null
@@ -184,11 +177,9 @@ public final class ItemFinderClient implements ClientModInitializer {
         }
         CaptureGate.Target target = new CaptureGate.Target(worldKey, dimension(), positions, ticks + 100);
         openChest.offer(target);
-        if (captureEnabled()) capture.offer(target);
     }
 
     public void cancelPendingInteraction() {
-        capture.offer(null);
         openChest.offer(null);
     }
 
@@ -197,34 +188,26 @@ public final class ItemFinderClient implements ClientModInitializer {
         if (worldKey == null || client.level == null || client.player == null
                 || !(client.player.containerMenu instanceof ChestMenu menu)
                 || menu.containerId != containerId) {
-            capture.clear();
             openChest.clear();
             return;
         }
         int slotCount = menu.getRowCount() * 9;
         openChest.open(worldKey, dimension(), containerId, slotCount, ticks);
-        if (captureEnabled()) {
-            capture.open(worldKey, dimension(), containerId, slotCount, ticks);
-        } else {
-            capture.clear();
-        }
     }
 
     public void onMenuContents(int containerId) {
-        openChest.initialize(containerId);
-        if (!captureEnabled() || !capture.initialize(containerId)) return;
+        if (!openChest.initialize(containerId)) return;
         snapshotCurrentMenu();
         flush();
     }
 
     public void onSlotUpdated(int containerId) {
-        if (containerId == capture.menuId()) snapshotCurrentMenu();
+        if (containerId == openChest.menuId()) snapshotCurrentMenu();
     }
 
     /** Save the final visible inventory before the player closes the container. */
     public void onMenuClosing() {
         snapshotCurrentMenu();
-        capture.clear();
         openChest.clear();
         flush();
     }
@@ -238,10 +221,14 @@ public final class ItemFinderClient implements ClientModInitializer {
 
     private void snapshotCurrentMenu() {
         Minecraft client = Minecraft.getInstance();
-        if (!captureEnabled() || worldKey == null || client.level == null || client.player == null
+        if (worldKey == null || client.level == null || client.player == null
                 || !(client.player.containerMenu instanceof ChestMenu menu)) return;
-        CaptureGate.Target target = capture.ready(worldKey, dimension(), menu.containerId);
+        rememberMenu(memory, openChest.ready(worldKey, dimension(), menu.containerId), menu, captureEnabled());
+    }
+
+    static void rememberMenu(ChestMemory memory, CaptureGate.Target target, ChestMenu menu, boolean captureEnabled) {
         if (target == null || menu.getRowCount() * 9 != target.slotCount()) return;
+        if (!captureEnabled && !memory.isKnownChest(target.dimension(), target.positions())) return;
         Map<String, Integer> items = new LinkedHashMap<>();
         // Only chest slots; the player's inventory and cursor are never included.
         for (int index = 0; index < target.slotCount(); index++) {

@@ -12,7 +12,7 @@ try {
     $env:GRADLE_USER_HOME = Join-Path $PSScriptRoot '.gradle-user-home'
     & .\gradlew.bat build
     if ($LASTEXITCODE -ne 0) { throw 'The mod build failed. Please check the build log.' }
-    Write-Host 'Built mod: build\libs\mc-item-finder-1.4.0.jar'
+    Write-Host 'Built mod: build\libs\mc-item-finder-1.4.1.jar'
 } finally {
     $env:JAVA_HOME = $taskOriginalJavaHome
     $env:GRADLE_USER_HOME = $taskOriginalGradleHome

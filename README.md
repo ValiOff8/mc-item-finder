@@ -5,7 +5,7 @@ A client-side Fabric mod for **Minecraft Java 26.3**. Remember opened chests, se
 ## Installation
 
 1. Install [Fabric Loader](https://fabricmc.net/use/installer/) **0.19.5 or later** for Minecraft **26.3**.
-2. Put `mc-item-finder-1.4.0.jar` and [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in your `mods` folder. Replace any older Item Finder JAR.
+2. Put `mc-item-finder-1.4.1.jar` and [Fabric API 0.161.0+26.3](https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.161.0%2B26.3/fabric-api-0.161.0%2B26.3.jar) in your `mods` folder. Replace any older Item Finder JAR.
 3. Launch Minecraft with Fabric. **Java 25** is required.
 
 Install [Mod Menu 21.0.0](https://www.curseforge.com/minecraft/mc-mods/modmenu) if you want settings in the Mods screen. It is optional. No server installation is needed.
@@ -37,8 +37,8 @@ Matching chests get glowing outlines, including through walls.
 ## Things to know
 
 - Supports normal, trapped, and double chests. Ender chests, barrels, and shulker boxes are excluded.
-- Only chests opened while memory is enabled are recorded. Previously remembered chests remain searchable when memory is disabled.
-- Searches use the **last contents you saw**. Reopen a chest with memory enabled after hoppers or other players change it.
+- Chest memory ON remembers new chests. With memory OFF, new chests are ignored, but previously remembered chests still update when opened or when you move items.
+- Searches use the **last contents you saw**. Reopen a remembered chest after hoppers or other players change it; this also works with memory OFF.
 - Data stays local in `config/itemfinder/`, separated by world/server and dimension.
 
 ## Build
